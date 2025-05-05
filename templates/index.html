@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Word Counter & Charts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Unique Word Counter By:- Ajay Jha 🎯</h1>
+
+        <form method="POST">
+            <textarea name="text_area" placeholder="Enter your text here..." required></textarea>
+            <div class="buttons">
+                <button type="submit" class="btn">Analyze Text</button>
+                {% if word_count %}
+                <a href="{{ url_for('download_csv') }}" class="btn download-btn">Download CSV</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if word_count %}
+        <h2 class="subtitle">Total Unique Words: {{ word_count|length }}</h2>
+
+        <!-- PIE Chart -->
+        <div class="chart-container">
+            <h3 class="chart-title">Pie Chart 🍰</h3>
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <!-- BAR Chart -->
+        <div class="chart-container">
+            
+            <h3 class="chart-title">Bar Chart 📊</h3>
+            <canvas id="barChart"></canvas>
+        </div>
+
+        <!-- DOUGHNUT Chart -->
+        <div class="chart-container">
+            <h3 class="chart-title">Doughnut Chart 🍩</h3>
+            <canvas id="doughnutChart"></canvas>
+        </div>
+
+        <script>
+            const labels = {{ word_count.keys()|list|tojson }};
+            const values = {{ word_count.values()|list|tojson }};
+
+            // PIE CHART
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Word Frequency',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 206, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(153, 102, 255, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(233, 30, 99, 0.6)',
+                            'rgba(0, 150, 136, 0.6)',
+                            'rgba(63, 81, 181, 0.6)',
+                            'rgba(156, 39, 176, 0.6)',
+                            'rgba(205, 220, 57, 0.6)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+
+            // BAR CHART
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Word Frequency',
+                        data: values,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // DOUGHNUT CHART
+            const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+            new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Word Frequency',
+                        data: values,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(255, 159, 64, 0.6)',
+                            'rgba(255, 205, 86, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(153, 102, 255, 0.6)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        </script>
+        {% endif %}
+    </div>
+</body>
+</html>
